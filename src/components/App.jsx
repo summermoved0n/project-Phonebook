@@ -1,17 +1,21 @@
-import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-import * as PhoneBookApi from '../helpers/api-services';
+// import FilterBar from './FilterBar/FilterBar';
+import Loyaot from './Loyaot/Loyaot';
+import Register from '../pages/Register/Register';
+import Login from 'pages/Login/Login';
+import Home from 'pages/Home/Home';
+import Contacts from 'pages/Contacts/Contacts';
 
 export default function App() {
-  const [email, useEmail] = useState('sobara@mail.com');
-  const [password, usePassword] = useState('123456');
-
-  console.log(email);
-
-  useEffect(() => {
-    PhoneBookApi.userRegister(email, password)
-      .then(data => console.log(data))
-      .catch(err => console.log(err));
-  });
-  return <div>Helloo</div>;
+  return (
+    <Routes>
+      <Route path="/" element={<Loyaot />}>
+        <Route index element={<Home />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/contacts" element={<Contacts />} />
+      </Route>
+    </Routes>
+  );
 }
