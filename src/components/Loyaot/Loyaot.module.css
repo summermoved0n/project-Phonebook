@@ -1,0 +1,14 @@
+.loyaot_navigation {
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.page_link {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.page_link:focus {
+  color: teal;
+}

@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
 
-// import FilterBar from './FilterBar/FilterBar';
 import Loyaot from './Loyaot/Loyaot';
 import Register from '../pages/Register/Register';
 import Login from 'pages/Login/Login';
@@ -12,9 +11,9 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Loyaot />}>
         <Route index element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/contacts" element={<Contacts />} />
+        <Route path="register" element={<Register />} />
+        <Route path="login" element={<Login />} />
+        <Route path="contacts" element={<Contacts />} />
       </Route>
     </Routes>
   );
