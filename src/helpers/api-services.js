@@ -11,7 +11,13 @@ export async function userLogin(loginData) {
   const { data } = await axios.post('/users/login', loginData);
   const { token } = data;
   console.log(token);
-  localStorage.setItem('token', JSON.stringify(token));
+  if (token) {
+    localStorage.setItem('token', JSON.stringify(token));
+    localStorage.setItem('isLoggedIn', JSON.stringify(true));
+  } else {
+    localStorage.setItem('isLoggedIn', JSON.stringify(false));
+  }
+
   return data;
 }
 
@@ -20,6 +26,18 @@ export async function getAllContacts() {
     const token = JSON.parse(localStorage.getItem('token'));
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const { data } = await axios.get('/contacts');
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function addContact(contactData) {
+  try {
+    const token = JSON.parse(localStorage.getItem('token'));
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const { data } = axios.post('/contacts', contactData);
 
     return data;
   } catch (error) {
