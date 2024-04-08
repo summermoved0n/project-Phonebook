@@ -3,7 +3,6 @@ import React from 'react';
 import css from './ContactsItem.module.css';
 
 export default function ContactsItem({ contacts }) {
-  console.log(contacts);
   return (
     <ul className={css.contact_list}>
       {contacts.map(({ _id, name, email, phone }) => (

@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
 import * as PhoneBook from '../../helpers/api-services';
+import { Status } from '../../pages/Contacts/Contacts';
 
-export default function ContactsForm() {
+export default function ContactsForm({
+  setContactsUpdate,
+  setStatus,
+  setError,
+}) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -14,9 +19,19 @@ export default function ContactsForm() {
     }
 
     PhoneBook.addContact(addContactData)
-      .then(data => console.log(data))
-      .catch(err => console.log(err));
-  }, [addContactData]);
+      .then(data => {
+        const { name } = data;
+        alert(`New contacts "${name}" added success.`);
+        setContactsUpdate(true);
+        setAddContactData(null);
+      })
+      .catch(err => {
+        setAddContactData(null);
+        console.log(err);
+        setError(err.message);
+        setStatus(Status.REJECTED);
+      });
+  }, [addContactData, setContactsUpdate, setError, setStatus]);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -51,21 +66,21 @@ export default function ContactsForm() {
   return (
     <div>
       <form onSubmit={onSubmitForm}>
-        Name
+        <span>Name</span>
         <input
           type="text"
           name="name"
           value={name}
           onChange={handleInputChange}
         />
-        Email
+        <span>Email</span>
         <input
           type="text"
           name="email"
           value={email}
           onChange={handleInputChange}
         />
-        Phone
+        <span>Phone</span>
         <input
           type="text"
           name="phone"
