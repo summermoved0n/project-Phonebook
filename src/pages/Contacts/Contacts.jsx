@@ -68,7 +68,9 @@ export default function Contacts() {
           setIsContactsUpdate={setIsContactsUpdate}
         />
       )}
-      {contacts.length === 0 && <b>You have not contacts yet.🤷‍♂️</b>}
+      {(status === Status.RESOLVED && contacts.length) === 0 && (
+        <b>You have not contacts yet.🤷‍♂️</b>
+      )}
       {status === Status.REJECTED && <b>{error}😥</b>}
     </>
   );
