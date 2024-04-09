@@ -1,37 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import * as PhoneBook from '../../helpers/api-services';
-import { Status } from '../../pages/Contacts/Contacts';
+import { Status } from 'helpers/status';
 
 export default function ContactsForm({
-  setContactsUpdate,
-  setStatus,
+  setIsContactsUpdate,
   setError,
+  setStatus,
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [addContactData, setAddContactData] = useState(null);
-
-  useEffect(() => {
-    if (!addContactData) {
-      return;
-    }
-
-    PhoneBook.addContact(addContactData)
-      .then(data => {
-        const { name } = data;
-        alert(`New contacts "${name}" added success.`);
-        setContactsUpdate(true);
-        setAddContactData(null);
-      })
-      .catch(err => {
-        setAddContactData(null);
-        console.log(err);
-        setError(err.message);
-        setStatus(Status.REJECTED);
-      });
-  }, [addContactData, setContactsUpdate, setError, setStatus]);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -50,6 +30,10 @@ export default function ContactsForm({
     }
   };
 
+  const handleCheckboxClick = e => {
+    setIsChecked(!isChecked);
+  };
+
   const onSubmitForm = e => {
     e.preventDefault();
     const submitData = {
@@ -57,7 +41,24 @@ export default function ContactsForm({
       email,
       phone,
     };
-    setAddContactData(submitData);
+
+    if (isChecked) {
+      submitData.favorite = 'true';
+    }
+    console.log(submitData);
+
+    PhoneBook.addContact(submitData)
+      .then(data => {
+        console.log(data);
+        const { name } = data;
+        alert(`Contact "${name}" added success.`);
+        setStatus(Status.RESOLVED);
+        setIsContactsUpdate(prev => !prev);
+      })
+      .catch(err => {
+        setError(err.message);
+        setStatus(Status.REJECTED);
+      });
     setName('');
     setEmail('');
     setPhone('');
@@ -72,20 +73,26 @@ export default function ContactsForm({
           name="name"
           value={name}
           onChange={handleInputChange}
-        />
+        />{' '}
         <span>Email</span>
         <input
           type="text"
           name="email"
           value={email}
           onChange={handleInputChange}
-        />
+        />{' '}
         <span>Phone</span>
         <input
           type="text"
           name="phone"
           value={phone}
           onChange={handleInputChange}
+        />{' '}
+        <span>Favorite</span>
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleCheckboxClick}
         />
         <br />
         <br />

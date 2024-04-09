@@ -1,53 +1,75 @@
 import React, { useEffect, useState } from 'react';
 
 import * as PhoneBook from '../../helpers/api-services';
+import { Status } from 'helpers/status';
 // import css from './Contacts.module.css';
 import ContactsItem from 'components/ContactsItem/ContactsItem';
 import ContactsForm from 'components/ContactsForm/ContactsForm';
-
-export const Status = {
-  IDLE: 'idle',
-  PENDING: 'pending',
-  RESOLVED: 'resolved',
-  REJECTED: 'rejected',
-};
+import Modal from 'components/Modal/Modal';
 
 export default function Contacts() {
-  const [contactsUpdate, setContactsUpdate] = useState(false);
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState(Status.IDLE);
   const [contacts, setContacts] = useState(
     () => JSON.parse(localStorage.getItem('contacts')) ?? []
   );
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContact, setModalContact] = useState(null);
+  const [isContactsUpdate, setIsContactsUpdate] = useState(false);
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState(Status.IDLE);
+  // console.log(isModalOpen);
   useEffect(() => {
     setStatus(Status.PENDING);
-
     PhoneBook.getAllContacts()
       .then(data => {
         setContacts([...data]);
         window.localStorage.setItem('contacts', JSON.stringify(data));
-        setContactsUpdate(false);
         setStatus(Status.RESOLVED);
       })
       .catch(err => {
-        console.log(err);
+        setError(err.message);
         setStatus(Status.REJECTED);
       });
-  }, [contactsUpdate]);
+  }, [isContactsUpdate]);
+
+  const removeContact = id => {
+    PhoneBook.removeContactById(id)
+      .then(data => {
+        const { name } = data;
+        alert(`Contact "${name}" deleted.`);
+        setStatus(Status.RESOLVED);
+        setIsContactsUpdate(prev => !prev);
+      })
+      .catch(err => {
+        setError(err.message);
+        setStatus(Status.REJECTED);
+      });
+  };
 
   return (
     <>
       <ContactsForm
+        setIsContactsUpdate={setIsContactsUpdate}
         setError={setError}
-        setContactsUpdate={setContactsUpdate}
         setStatus={setStatus}
       />
       {status === Status.PENDING && <p>Loading...</p>}
-      {status === Status.RESOLVED && !contactsUpdate && (
-        <ContactsItem contacts={contacts} />
+      {status === Status.RESOLVED && (
+        <ContactsItem
+          contacts={contacts}
+          removeContact={removeContact}
+          setIsModalOpen={setIsModalOpen}
+          setModalContact={setModalContact}
+        />
       )}
-      {status === Status.REJECTED && <b>{error}</b>}
+      {isModalOpen && (
+        <Modal
+          modalContact={modalContact}
+          setIsModalOpen={setIsModalOpen}
+          setIsContactsUpdate={setIsContactsUpdate}
+        />
+      )}
+      {contacts.length === 0 && <b>You have not contacts yet.🤷‍♂️</b>}
+      {status === Status.REJECTED && <b>{error}😥</b>}
     </>
   );
 }
